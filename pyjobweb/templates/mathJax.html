@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MathJax</title>
+  <script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+</head>
+<body>
+  <h1>Hello, worldy!</h1>
+  <p> Prime Numbers and the number system. This is an endless source of finding and proving facts. </p>
+  <h2>Some fun with the modulus function</h2>
+  
+  <br/> Here is nice one: `p^2+2` is always divisible by 3 where `p` is a prime number.
+  <br/> This follows from an interesting foray into the mathematics of 'modulus' operator defined as the remainder after division.
+   In the formula `a/b` where `a>b` and  `a,b` are integers without any common factors, the modulus goes through all the numbers 0..b  in some order.
+  Because of this order, the `p%3` has a modulus, `2p%3` is double that  - i.e. `2*(p%3)%3` and so on..
+  Since `p%3` can only have values of 1 or 2, the `p*p%3 = ((p%3)^2) %3`.
+  This evaluates to 1 for all values of `p%3`. Therefore `p^2 +2` is always divisible by 3.
+  
+  Some examples:
+  `5*5 + 2 = 27, 7*7 + 2 = 51, 13*12 + 2 = 171 ..`
+  <p/>
+  <h2>Modulus mapping with squares</h2>
+  As noded about for the number 3, the mapping when the numerator is 'squared' is:
+  <br/>1 => 1
+  <br/>2 => 1
+  
+  <p>When `a != 0`, there are two solutions to `ax^2 + bx + c = 0` and
+they are</p>
+<p style="text-align:center">
+  `x = (-b +- sqrt(b^2-4ac))/(2a) .`
+</p>
+</body>
+</html>
