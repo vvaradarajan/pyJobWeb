@@ -17,7 +17,7 @@ app.controller('MainCtrl', function($scope,$http) {
             };
            
     function changeJsonObjectToDataArray(scope,http) {
-        http.get("http://localhost:5000/restful/jobs")
+        http.get("/restful/jobs")
         .then(function(response) {
         	console.log(response.data)
             updateChartWithResponse(scope,response.data)
