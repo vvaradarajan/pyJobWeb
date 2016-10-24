@@ -33,8 +33,8 @@ if os.name=='nt':
     section='windows'
 else:
     section='unix'
-lfNM=config[section]['jobRptfile']
-dfNM=config[section]['jobLockfile']
+lfNM=config[section]['jobLockfile']
+dfNM=config[section]['jobRptfile']
 
 ji=getStatus.jobStatus(lfNM,dfNM)
 app = Flask(__name__)    # Construct an instance of Flask class
