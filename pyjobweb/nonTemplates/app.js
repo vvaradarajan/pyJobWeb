@@ -14,7 +14,7 @@ app.controller('mainCtrl', function($scope,$http) {
 	$scope.RowTitles=jobArray[0];
 	jobArray.splice(0,1)
 	$scope.jobArray=jobArray;
-	alert($scope.RowTitles);
+	$scope.TableTitle="Job List";
 	}
 });
 
@@ -66,7 +66,7 @@ angular.module('charts.SBchart', [
                         isStacked:true
                     };
                     var getOptions = function() {
-                        return angular.extend({ }, settings, scope.$eval(attr.qnPiechart));
+                        return angular.extend({ }, settings, scope.$eval(attr.qnSbchart));
                     };
 
                     // creates instance of datatable and adds columns from settings

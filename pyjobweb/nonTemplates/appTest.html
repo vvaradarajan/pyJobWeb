@@ -61,19 +61,26 @@
 		</nav>
 	</header>
 	<!--  Content -->
+	<div style="width: 800px">
 	<div ng-controller="chartCtrl">
-		<button ng:click="refresh()">Refresh</button>
-		<div style="float: left; width: 600px" ng:model="data"
+		<button ng:click="refresh()" style="float:right">Refresh</button>
+		<h3 style="text-align:center">Job Phase vs Time</h3>
+		<div style="float: left; width: 800px; border:1px; border-style: none none solid none;" ng:model="data"
+		
 			qn:sbchart="{
                 legend : {alignment: 'center'}, 
-                chartArea: {height: 100},
+                chartArea: {width: '50%'},
                 backgroundColor: '#F7F7F7',
-                title:'Execution Phase of Jobs',
-                isStacked:true}">
+                isStacked:true,
+                hAxis: {title: 'Jobs'},
+                vAxis: {title: 'time(ms)'}
+                }">
 		</div>
+		
 	</div>
 	<div ng-controller="mainCtrl" style="clear: both;padding-left: 30px">
-		<Table>
+		<h3 style="text-align:center">{{TableTitle}}</h3>
+		<Table style="margin: 0 auto">
 			<tr>
 			<th ng-repeat="title in RowTitles" style="padding:5px">{{title}}</th>
 			</tr>
@@ -81,6 +88,7 @@
 				<td ng-repeat="s in job" style="padding:5px">{{s}}</td>
 			</tr>
 		</Table>
+	</div>
 	</div>
 </body>
 
