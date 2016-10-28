@@ -8,7 +8,7 @@ Created on Oct 15, 2016
 """
 app1.py: First Python-Flask webapp
 """
-from flask import Flask, render_template  # Import class Flask from module flask
+from flask import Flask, render_template, send_from_directory  # Import class Flask from module flask
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 from jobInfo import getStatus
@@ -20,8 +20,10 @@ import sys
 
 #Restful resource
 class Jobs(Resource):
-    def get(self,jobs):
-        return ji.getStatus()
+    def get(self,mNM):
+        print ("Vasan: "+mNM)
+        return getattr(ji,'get'+mNM)(); #calls ji.get<mNM>. mNM should be a method of ji 
+#main env is set here
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
 print(dir_path)        
@@ -35,9 +37,11 @@ else:
     section='unix'
 lfNM=config[section]['jobLockfile']
 dfNM=config[section]['jobRptfile']
+jobfNM=config[section]['jobConfigfile']
 
-ji=getStatus.jobStatus(lfNM,dfNM)
+ji=getStatus.jobStatus(lfNM,dfNM,jobfNM)
 app = Flask(__name__)    # Construct an instance of Flask class
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 CORS(app)
 api = Api(app)
 @app.route('/')   # Register index() as route handler for root URL '/'
@@ -49,7 +53,7 @@ def index():
 @app.route('/web/<path>')   # Register index() as route handler for root URL '/'
 @cross_origin()
 def urlPages(path):
-    return render_template(path)
-api.add_resource(Jobs, '/restful/<jobs>')
+    return send_from_directory(dir_path+"/nonTemplates",path) # Send files without jinja templating (interferes with angular)
+api.add_resource(Jobs, '/restful/<mNM>')
 if __name__ == '__main__':  # Script executed directly?
    app.run(host='0.0.0.0')  # Launch built-in web server and run this Flask webapp

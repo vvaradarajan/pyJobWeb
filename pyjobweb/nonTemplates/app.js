@@ -2,9 +2,24 @@ var app = angular.module('angularjs-starter', [
   'charts.SBchart'
   ]); 
 
+app.controller('mainCtrl', function($scope,$http) {
+	
+	$http.get("/restful/JobList")
+	  .then (function(response){
+		  cb_popJobData($scope,response.data)
+	  })
+	function cb_popJobData(scope,jobArray) {
+	$scope.jobArray=[{"name":"joba","waitTime":"2ms"}];
+	/* create a heading from the 1st row */
+	$scope.RowTitles=jobArray[0];
+	jobArray.splice(0,1)
+	$scope.jobArray=jobArray;
+	alert($scope.RowTitles);
+	}
+});
 
-
-app.controller('MainCtrl', function($scope,$http) {
+/* chartCtrl is for google chart*/
+app.controller('chartCtrl', function($scope,$http) {
     /* Test data to be used when ajax is not working
      
      $scope.data = [
@@ -17,7 +32,7 @@ app.controller('MainCtrl', function($scope,$http) {
             };
            
     function changeJsonObjectToDataArray(scope,http) {
-        http.get("/restful/jobs")
+        http.get("/restful/Status")
         .then(function(response) {
         	console.log(response.data)
             updateChartWithResponse(scope,response.data)

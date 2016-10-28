@@ -7,6 +7,7 @@ import os
 import errno
 import json
 import inspect
+import csv
 class jobStatus:
     '''Reads the status file and returns a json '''
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
@@ -68,16 +69,33 @@ class jobStatus:
         return self.convertJsonLineToGoogleDataTable(jsonLine)
 
         return jsonLine
-    def __init__(self, lfNM, dfNM):
+    def __init__(self, lfNM, dfNM,jobsfNM):
             """Constructor"""
             self.lfNM=lfNM
             self.dfNM=dfNM
-            
+            self.jobsfNM=jobsfNM
+    def getJobList(self):
+    #read the joblist and create a json array of job objects
+        with open(self.jobsfNM) as f:
+            jobLineRdt = csv.reader(f,delimiter=',')
+            #The first line is #Format: jobId, jobClass, jobParams
+            jobArray=[]
+            for row in jobLineRdt:
+                jobrow=[]
+                for s in row:
+                    if (s.startswith("#Format:") ): #process header row
+                        jobrow.append(s[9:])
+                    else:
+                        jobrow.append(s)
+                jobArray.append(jobrow)
+                print (', '.join(row)) #row is a list of strings and join makes it one string
+        return jobArray
 #for testing
 if __name__ == "__main__":
 # execute only if run as a script
     lfNM="C:/junk/junk.lock"
     dfNM="C:/junk/report.txt"
-    ji=jobStatus(lfNM,dfNM)
+    jfNM="C:/junk/jobs.txt"
+    ji=jobStatus(lfNM,dfNM,jfNM)
     print(inspect.getmembers(ji))
     ji.getStatus()
