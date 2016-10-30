@@ -8,6 +8,7 @@ import errno
 import json
 import inspect
 import csv
+from jobInfo.commandHandler import cmdOutputParser 
 class jobStatus:
     '''Reads the status file and returns a json '''
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
@@ -69,11 +70,15 @@ class jobStatus:
         return self.convertJsonLineToGoogleDataTable(jsonLine)
 
         return jsonLine
-    def __init__(self, lfNM, dfNM,jobsfNM):
+    def getStartJobs(self): #not get but exec
+        cmdOutputParser.threadOsCommand(self.jobRunCmd)
+        return {}
+    def __init__(self, config):
             """Constructor"""
-            self.lfNM=lfNM
-            self.dfNM=dfNM
-            self.jobsfNM=jobsfNM
+            self.lfNM=config['jobLockfile']
+            self.dfNM=config['jobRptfile']
+            self.jobsfNM=config['jobConfigfile']
+            self.jobRunCmd=config['jobRunCmd']
     def getJobList(self):
     #read the joblist and create a json array of job objects
         with open(self.jobsfNM) as f:

@@ -3,18 +3,23 @@ var app = angular.module('angularjs-starter', [
   ]); 
 
 app.controller('mainCtrl', function($scope,$http) {
-	
+	$scope.refresh = function() {
+		$http.get("/restful/StartJobs")
+        .then(function(response) {
+        	console.log(response.data)
+        });
+	};
 	$http.get("/restful/JobList")
 	  .then (function(response){
 		  cb_popJobData($scope,response.data)
 	  })
 	function cb_popJobData(scope,jobArray) {
-	$scope.jobArray=[{"name":"joba","waitTime":"2ms"}];
-	/* create a heading from the 1st row */
-	$scope.RowTitles=jobArray[0];
-	jobArray.splice(0,1)
-	$scope.jobArray=jobArray;
-	$scope.TableTitle="Job List";
+		scope.jobArray=[{"name":"joba","waitTime":"2ms"}];
+		/* create a heading from the 1st row */
+		scope.RowTitles=jobArray[0];
+		jobArray.splice(0,1)
+		scope.jobArray=jobArray;
+		scope.TableTitle="Job List";
 	}
 });
 

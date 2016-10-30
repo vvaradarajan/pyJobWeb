@@ -35,11 +35,8 @@ if os.name=='nt':
     section='windows'
 else:
     section='unix'
-lfNM=config[section]['jobLockfile']
-dfNM=config[section]['jobRptfile']
-jobfNM=config[section]['jobConfigfile']
 
-ji=getStatus.jobStatus(lfNM,dfNM,jobfNM)
+ji=getStatus.jobStatus(config[section])
 app = Flask(__name__)    # Construct an instance of Flask class
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 CORS(app)
