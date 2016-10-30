@@ -250,14 +250,15 @@ class cmdOutputParser:
         return pkgsToAdd
     @staticmethod
     def threadOsCommand(cmd):
+        #split string into components without spaces and pass a tuple
         try:
             _thread.start_new_thread(cmdOutputParser.execCmd ,(cmd,))
             return {}
         except Exception as e:
-            print ("Error: unable to starty thread: " +str(e))
+            print ("Error: unable to start thread: " +str(e))
     @staticmethod
     def execCmd(cmd):
-        retcode=call(cmd);
+        retcode=call(cmd.split()); #call takes an array of strings with the first part being the cmd and the others args
         print ("Thread " + cmd +": ret="+str(retcode))
     @staticmethod
     def execCmdAndShowOutput(cmd):
