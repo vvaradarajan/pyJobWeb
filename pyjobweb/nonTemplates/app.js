@@ -2,29 +2,8 @@ var app = angular.module('angularjs-starter', [
   'charts.SBchart'
   ]); 
 
-app.controller('mainCtrl', function($scope,$http) {
-	$scope.refresh = function() {
-		$http.get("/restful/StartJobs")
-        .then(function(response) {
-        	console.log(response.data)
-        });
-	};
-	$http.get("/restful/JobList")
-	  .then (function(response){
-		  cb_popJobData($scope,response.data)
-	  })
-	function cb_popJobData(scope,jobArray) {
-		scope.jobArray=[{"name":"joba","waitTime":"2ms"}];
-		/* create a heading from the 1st row */
-		scope.RowTitles=jobArray[0];
-		jobArray.splice(0,1)
-		scope.jobArray=jobArray;
-		scope.TableTitle="Job List";
-	}
-});
-
 /* chartCtrl is for google chart*/
-app.controller('chartCtrl', function($scope,$http) {
+myChartCtrl = app.controller('chartCtrl', function($scope,$http) {
     /* Test data to be used when ajax is not working
      
      $scope.data = [
@@ -56,7 +35,10 @@ app.controller('chartCtrl', function($scope,$http) {
       //push the column data in 1st two rows
       scope.data=Jo;
       scope.name="Gazebo"
-    }          
+    }
+    $scope.echo = function () {
+    	alert("From chartCtrl - echo");
+    }
 });
 
 angular.module('charts.SBchart', [
@@ -125,3 +107,51 @@ angular.module('charts.SBchart', [
             };
         }
     ]);
+
+/* main Ctrl for displaying table below chart*/
+app.controller('mainCtrl', function($scope,$http) {
+	$scope.refresh = function() {
+		$http.get("/restful/StartJobs")
+        .then(function(response) {
+        	console.log(response.data)
+        });
+	};
+	$http.get("/restful/JobList")
+	  .then (function(response){
+		  cb_popJobData($scope,response.data)
+	  })
+	function cb_popJobData(scope,jobArray) {
+		/* create a heading from the 1st row */
+		scope.RowTitles=jobArray[0];
+		jobArray.splice(0,1)
+		scope.jobArray=jobArray;
+		scope.TableTitle="Job List";
+	}
+});
+
+//for timer 
+app.directive('myCurrentTime', function($interval, dateFilter) {
+
+    function link(scope, element, attr,ctrl) {
+      var format,
+          timeoutId;
+      function updateTime() {
+    	scope.refresh();
+      }
+      element.on('$destroy', function() {
+        $interval.cancel(timeoutId);
+      });
+
+      // start the UI update process; save the timeoutId for canceling
+      timeoutId = $interval(function() {
+        updateTime(); // update DOM
+      }, 2000);
+    }
+
+    return {
+    	controller: 'chartCtrl',
+        controllerAs: 'ctrl',
+        bindToController: true,
+      link: link
+    };
+  });
