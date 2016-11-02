@@ -1,20 +1,63 @@
+/* A self stopping time Global function:
+ * g_v = global timer (obtained from gb
+ * g_refresh => calls g_v refresh with g_v as this
+ * g_reset => call g_v reset with g_v as this
+ * objectFcnNM => function to be called at each timer interval
+ */
+function gb(objectFcnNM,interval) {
+	
+	return {
+		noOfSamples: 20,
+		CnoOfSamples:0,
+		timerOn: true,
+		timerInterval: 1000,
+		objectFcnNM:objectFcnNM,
+		timerId:null,
+		interval: interval,
+		refresh: function() {
+			this.CnoOfSamples --;
+			if (this.CnoOfSamples > 0)  this.objectFcnNM();
+			else this.stop();
+		},
+		reset: function() {
+			this.CnoOfSamples=this.noOfSamples;
+			this.timerOn=true;
+			this.timerId = this.interval(g_refresh,this.timerInterval)
+		},
+		stop: function() {
+			this.timerOn=false;
+			interval.cancel(this.timerId);
+		}
+	}
+}
+
+function g_refresh() {
+	g_v.refresh.call(g_v);
+}
+function g_timeReset() {
+	g_v.reset.call(g_v);
+}
+var g_v=null;
+
 var app = angular.module('angularjs-starter', [
   'charts.SBchart'
   ]); 
 
 /* chartCtrl is for google chart*/
-myChartCtrl = app.controller('chartCtrl', function($scope,$http) {
+myChartCtrl = app.controller('chartCtrl', function($scope,$http,$interval) {
     /* Test data to be used when ajax is not working
      
      $scope.data = [
                 ['Mushrooms', 3,5,2]
             ];
     */
-     changeJsonObjectToDataArray($scope,$http);
-     $scope.refresh = function(){
+    changeJsonObjectToDataArray($scope,$http);
+    $scope.refresh = function(){
             changeJsonObjectToDataArray($scope,$http);
             };
-           
+    /*initialize the global object for timer*/
+    g_v=gb($scope.refresh,$interval);
+     
     function changeJsonObjectToDataArray(scope,http) {
         http.get("/restful/Status")
         .then(function(response) {
@@ -110,10 +153,11 @@ angular.module('charts.SBchart', [
 
 /* main Ctrl for displaying table below chart*/
 app.controller('mainCtrl', function($scope,$http) {
-	$scope.refresh = function() {
+	$scope.StartJobs = function() {
 		$http.get("/restful/StartJobs")
         .then(function(response) {
         	console.log(response.data)
+            g_timeReset.call(g_v);
         });
 	};
 	$http.get("/restful/JobList")
@@ -128,30 +172,3 @@ app.controller('mainCtrl', function($scope,$http) {
 		scope.TableTitle="Job List";
 	}
 });
-
-//for timer 
-app.directive('myCurrentTime', function($interval, dateFilter) {
-
-    function link(scope, element, attr,ctrl) {
-      var format,
-          timeoutId;
-      function updateTime() {
-    	scope.refresh();
-      }
-      element.on('$destroy', function() {
-        $interval.cancel(timeoutId);
-      });
-
-      // start the UI update process; save the timeoutId for canceling
-      timeoutId = $interval(function() {
-        updateTime(); // update DOM
-      }, 2000);
-    }
-
-    return {
-    	controller: 'chartCtrl',
-        controllerAs: 'ctrl',
-        bindToController: true,
-      link: link
-    };
-  });
