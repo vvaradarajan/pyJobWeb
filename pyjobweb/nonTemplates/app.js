@@ -22,7 +22,7 @@ function gb(objectFcnNM,interval) {
 		reset: function() {
 			this.CnoOfSamples=this.noOfSamples;
 			this.timerOn=true;
-			this.timerId = this.interval(g_refresh,this.timerInterval)
+			this.timerId = this.interval(g_refresh,this.timerInterval,this.noOfSamples)
 		},
 		stop: function() {
 			this.timerOn=false;
@@ -154,13 +154,15 @@ angular.module('charts.SBchart', [
 /* main Ctrl for displaying table below chart*/
 app.controller('mainCtrl', function($scope,$http) {
 	$scope.StartJobs = function() {
-		$http.get("/restful/StartJobs")
+		//ajax call to start jobs of a jobset and also return the lineal time
+		$http.get("/restful/StartJobs/ProjectG")
         .then(function(response) {
         	console.log(response.data)
+        	g_v.noOfSamples=response.data.linealTime;
             g_timeReset.call(g_v);
         });
 	};
-	$http.get("/restful/JobList")
+	$http.get("/restful/JobList/ProjectG")
 	  .then (function(response){
 		  cb_popJobData($scope,response.data)
 	  })

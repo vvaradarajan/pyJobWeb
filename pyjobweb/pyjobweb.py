@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Created on Oct 15, 2016
+Created on Nov 7, 2016
 
 @author: acer
 '''
@@ -18,11 +18,18 @@ import configparser
 import os
 import sys
 
-#Restful resource
+#Restful resource (should be in a different file like java!)
 class Jobs(Resource):
-    def get(self,mNM):
-        print ("Vasan: "+mNM)
-        return getattr(ji,'get'+mNM)(); #calls ji.get<mNM>. mNM should be a method of ji 
+    def get(self,restfulPath):
+        print ("Vasan: "+restfulPath)
+        urlParts=restfulPath.split('/')
+        for i in range(0,len(urlParts)):
+            print('urlParts['+str(i)+']='+urlParts[i])
+        if len(urlParts) == 2:
+            return getattr(ji,'get'+urlParts[0])(urlParts[1]); #calls ji.get..path. The first part is method name of ji, and the second is an argument 
+        else:
+            return getattr(ji,'get'+urlParts[0])()
+
 #main env is set here
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
@@ -47,10 +54,12 @@ def index():
     """Route handler (or View Function) for root URL '/'"""
     return render_template('index.html')
     #return 'Hello, world!'
-@app.route('/web/<path>')   # Register index() as route handler for root URL '/'
+    
+@app.route('/web/<path:path>')   # Register all urls with /web path be served from nonTemplates (i.e. angular => no jinga2 templating)
 @cross_origin()
 def urlPages(path):
     return send_from_directory(dir_path+"/nonTemplates",path) # Send files without jinja templating (interferes with angular)
-api.add_resource(Jobs, '/restful/<mNM>')
+
+api.add_resource(Jobs, '/restful/<path:restfulPath>') #Note restfulPath name needs to match with the Jobs resource
 if __name__ == '__main__':  # Script executed directly?
    app.run(host='0.0.0.0')  # Launch built-in web server and run this Flask webapp

@@ -8,7 +8,11 @@ import errno
 import json
 import inspect
 import csv
-from jobInfo.commandHandler import cmdOutputParser 
+from jobInfo.commandHandler import cmdOutputParser
+
+
+from jobInfo.dbUtils import job 
+
 class jobStatus:
     '''Reads the status file and returns a json '''
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
@@ -70,16 +74,25 @@ class jobStatus:
         return self.convertJsonLineToGoogleDataTable(jsonLine)
 
         return jsonLine
-    def getStartJobs(self): #not get but exec
+    def getStartJobs(self,categ): #not get but exec
         cmdOutputParser.threadOsCommand(self.jobRunCmd)
-        return {}
+        #return the lineal time
+        jobList=job.getJobList(categ);
+        if len(jobList)==0:
+            print("No jobs in categ: "+categ+"\nExiting")
+            sys.exit(1)
+        lt={}
+        lt['linealTime'] = jobStatus.getLinealTime(jobList)
+        return lt
     def __init__(self, config):
             """Constructor"""
             self.lfNM=config['jobLockfile']
             self.dfNM=config['jobRptfile']
             self.jobsfNM=config['jobConfigfile']
             self.jobRunCmd=config['jobRunCmd']
-    def getJobList(self):
+    def getJobList(self,categ):
+        return self.getJobListFromDB(categ) #get JobList from file
+    def getJobListFromFile(self):
     #read the joblist and create a json array of job objects
         with open(self.jobsfNM) as f:
             jobLineRdt = csv.reader(f,delimiter=',')
@@ -95,6 +108,13 @@ class jobStatus:
                 jobArray.append(jobrow)
                 print (', '.join(row)) #row is a list of strings and join makes it one string
         return jobArray
+    def getJobListFromDB(self,categ):
+        print (job.getJobList(categ))
+        return job.getJobList(categ)
+    @staticmethod
+    def getLinealTime(JobList):
+        return job.getLinealTime(JobList)
+            
 #for testing
 if __name__ == "__main__":
 # execute only if run as a script
