@@ -158,7 +158,7 @@ app.controller('mainCtrl', function($scope,$http) {
 		$http.get("/restful/StartJobs/ProjectG")
         .then(function(response) {
         	console.log(response.data)
-        	g_v.noOfSamples=response.data.linealTime;
+        	g_v.noOfSamples=response.data.linealTime+3; //add a 3 second margin
             g_timeReset.call(g_v);
         });
 	};
