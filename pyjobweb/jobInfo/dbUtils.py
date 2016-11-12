@@ -3,6 +3,17 @@ import pymysql.cursors
 import json
 class job:
     #(jobId:String,jobClass:String,jobPrams:String)
+    conn=None
+    @staticmethod
+    def setConn():
+        if job.conn==None :
+            job.conn = pymysql.connect(host='45.55.0.197',
+                                           database='jobdb',
+                                           user='vvaradar',
+                                           password='arjkar123')
+        if job.conn==None:
+            print('Connect to database not made - aborting!' )
+            sys.exit(1)
     @staticmethod
     def getJob(jobId,jobClass,jobParams):
         job=[]
@@ -12,33 +23,38 @@ class job:
         return job
     @staticmethod 
     def getJobList(categ):
+        job.setConn()
+        sql= "select j.jobId,j.jobClass,j.jobParams from jobs j inner join jobCategory jc " \
+        + " on j.jobid=jc.jobid and jc.category='"+categ+"'"
+        print(sql)
         try:
-            conn = pymysql.connect(host='45.55.0.197',
-                                           database='jobdb',
-                                           user='vvaradar',
-                                           password='arjkar123')
-            if conn.open:
-                print('Connected to MySQL database')
-                testCursor=conn.cursor()
-                sql= "select j.jobId,j.jobClass,j.jobParams from jobs j inner join jobCategory jc " \
-                    + " on j.jobid=jc.jobid and jc.category='"+categ+"'"
-                print(sql)
-                testCursor.execute(sql)
-                jobList=[] #return array of jobs - each job an array of Strings
-                hdr=testCursor.description #returns an array of nm, type,etc for each column
-                jobList.append(job.getJob(hdr[0][0],hdr[1][0],hdr[2][0]))
-                for row in testCursor:
-                    jobList.append(job.getJob(row[0],row[1],row[2]))
-                return jobList
-            else:
-                print('Conn not open: '+conn.open)       
- 
+            testCursor=job.conn.cursor()
+            testCursor.execute(sql)
+            jobList=[] #return array of jobs - each job an array of Strings
+            hdr=testCursor.description #returns an array of nm, type,etc for each column
+            jobList.append(job.getJob(hdr[0][0],hdr[1][0],hdr[2][0]))
+            for row in testCursor:
+                jobList.append(job.getJob(row[0],row[1],row[2]))
+            return jobList 
         except Exception as e:
             print(e)
- 
         finally:
-            conn.close()
- 
+            testCursor.close()
+    @staticmethod 
+    def getJobCategList():
+        job.setConn()
+        sql = "select distinct category from jobCategory"
+        try:
+            testCursor=job.conn.cursor()
+            testCursor.execute(sql)
+            categList=[] #return array of jobs - each job an array of Strings
+            for row in testCursor:
+                categList.append(row[0])
+            return categList 
+        except Exception as e:
+            print(e)
+        finally:
+            testCursor.close()
     @staticmethod
     def getJobListOld():
         jobList=[] #return array of jobs - each job an array of Strings
@@ -60,37 +76,11 @@ class job:
                 except Exception as err:
                     print("json error for "+ j[2])
         return lt    
-def connect():
-    """ Connect to MySQL database """
-    try:
-        conn = pymysql.connect(host='45.55.0.197',
-                                       database='jobdb',
-                                       user='vvaradar',
-                                       password='arjkar123')
-        if conn.open:
-            print('Connected to MySQL database')
-            testCursor=conn.cursor()
-            sql= """select j.jobId,j.jobClass,j.jobParams from jobs j inner join jobCategory jc
- on j.jobid=jc.jobid and jc.category='ProjectG'"""
-            testCursor.execute(sql)
-            for row in testCursor:
-                
-                print (row)
-#             isql="insert into junk(i) values(%s)"
-#             for i in range(2,10):
-#                 testCursor.execute(isql,i)
-#             conn.commit()
-        else:
-            print('Conn not open: '+conn.open)       
- 
-    except Error as e:
-        print(e)
- 
-    finally:
-        conn.close()
- 
- 
+    @staticmethod
+    def cleanup():
+        job.conn.close()
 if __name__ == '__main__':
     jl=job.getJobList("ProjectG")
     print('Lineal time = '+str(job.getLinealTime(jl)))
+    print('category List = '+str(job.getJobCategList()))
     #connect()

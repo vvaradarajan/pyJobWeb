@@ -111,6 +111,14 @@ class jobStatus:
     def getJobListFromDB(self,categ):
         print (job.getJobList(categ))
         return job.getJobList(categ)
+    
+    def getCateg(self):
+        categList=[]
+        for s in job.getJobCategList() :
+            opt={}
+            opt["name"]=s
+            categList.append(opt)
+        return categList
     @staticmethod
     def getLinealTime(JobList):
         return job.getLinealTime(JobList)

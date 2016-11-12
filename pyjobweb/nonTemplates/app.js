@@ -166,6 +166,10 @@ app.controller('mainCtrl', function($scope,$http) {
 	  .then (function(response){
 		  cb_popJobData($scope,response.data)
 	  })
+	$http.get("/restful/Categ")
+	  .then (function(response){
+		  $scope.categArray=response.data;
+	  })
 	function cb_popJobData(scope,jobArray) {
 		/* create a heading from the 1st row */
 		scope.RowTitles=jobArray[0];
