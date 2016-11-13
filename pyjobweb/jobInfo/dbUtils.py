@@ -6,6 +6,14 @@ class job:
     conn=None
     @staticmethod
     def setConn():
+        if job.conn != None:
+            #check for dead connection
+            testCursor=job.conn.cursor()
+            testCursor.execute("select 1")
+            rows = testCursor.fetchall()
+            if len(rows) <=0:
+                jon.conn = None
+            testCursor.close()
         if job.conn==None :
             job.conn = pymysql.connect(host='45.55.0.197',
                                            database='jobdb',
@@ -40,6 +48,7 @@ class job:
             print(e)
         finally:
             testCursor.close()
+        
     @staticmethod 
     def getJobCategList():
         job.setConn()
