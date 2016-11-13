@@ -80,9 +80,8 @@
 			<!-- <span my-current-time="format"></span>  -->
 		</div>
 		<div ng-controller="mainCtrl" style="clear: both; padding-left: 30px">
-			<label>workflow: <select ng-model="myColor"
-				ng-options="categ.name for categ in categArray">
-			</select>
+			<label>workflow: 
+			<select ng-model="categSelected" ng-options="categ.name for categ in categArray" ng-change="selectedCateg()"></select>
 			</label><br />
 
 			<button ng:click="StartJobs()" style="float: right">Run Jobs</button>

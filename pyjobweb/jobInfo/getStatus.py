@@ -75,9 +75,11 @@ class jobStatus:
 
         return jsonLine
     def getStartJobs(self,categ): #not get but exec
-        cmdOutputParser.threadOsCommand(self.jobRunCmd)
+        self.jobCateg=categ
+        cmdOutputParser.threadOsCommand(self.jobRunCmd+" "+self.jobCateg)
         #return the lineal time
-        jobList=job.getJobList(categ);
+        jobList=job.getJobList(categ)
+        print("No jobs in categ: "+categ)
         if len(jobList)==0:
             print("No jobs in categ: "+categ+"\nExiting")
             sys.exit(1)
@@ -90,6 +92,7 @@ class jobStatus:
             self.dfNM=config['jobRptfile']
             self.jobsfNM=config['jobConfigfile']
             self.jobRunCmd=config['jobRunCmd']
+            self.jobCateg=config['defaultJobCateg']
     def getJobList(self,categ):
         return self.getJobListFromDB(categ) #get JobList from file
     def getJobListFromFile(self):

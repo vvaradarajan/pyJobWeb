@@ -38,6 +38,7 @@ function g_timeReset() {
 	g_v.reset.call(g_v);
 }
 var g_v=null;
+var g_o={"categ":"ProjectG"};
 
 var app = angular.module('angularjs-starter', [
   'charts.SBchart'
@@ -155,26 +156,41 @@ angular.module('charts.SBchart', [
 app.controller('mainCtrl', function($scope,$http) {
 	$scope.StartJobs = function() {
 		//ajax call to start jobs of a jobset and also return the lineal time
-		$http.get("/restful/StartJobs/ProjectG")
+		$http.get("/restful/StartJobs/"+g_o.categ)
         .then(function(response) {
         	console.log(response.data)
         	g_v.noOfSamples=response.data.linealTime+3; //add a 3 second margin
             g_timeReset.call(g_v);
         });
 	};
-	$http.get("/restful/JobList/ProjectG")
-	  .then (function(response){
-		  cb_popJobData($scope,response.data)
-	  })
-	$http.get("/restful/Categ")
-	  .then (function(response){
-		  $scope.categArray=response.data;
-	  })
+	$scope.selectedCateg = function() {
+		g_o.categ=$scope.categSelected.name;
+		console.log("categ="+g_o.categ);
+		//refresh the joblist
+		refreshJobList($scope);
+		//refresh the chart
+		$scope.StartJobs();
+		
+	};
+	function refreshJobList(scope) {
+		$http.get("/restful/JobList/"+g_o.categ)
+		  .then (function(response){
+			  cb_popJobData(scope,response.data)
+		  })
+	}
 	function cb_popJobData(scope,jobArray) {
+		/* display joblist */
 		/* create a heading from the 1st row */
 		scope.RowTitles=jobArray[0];
 		jobArray.splice(0,1)
 		scope.jobArray=jobArray;
 		scope.TableTitle="Job List";
 	}
+	/* Initialization section */
+	refreshJobList($scope)
+	$http.get("/restful/Categ")
+	  .then (function(response){
+		  $scope.categArray=response.data;
+	  })
+	
 });
