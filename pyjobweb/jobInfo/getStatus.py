@@ -60,7 +60,6 @@ class jobStatus:
     def getStatus(self):
         try:
             lf = os.open(self.lfNM, jobStatus.flags)
-            os.close(lf)
         except OSError as e:
             if e.errno == errno.EEXIST:  # Failed as the file already exists.
                 pass
@@ -70,6 +69,7 @@ class jobStatus:
         #Read Json from file and returnhttps://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwiV_7CK193PAhVnsFQKHRZVB64QFggkMAI&url=http%3A%2F%2Fstackoverflow.com%2Fquestions%2F68645%2Fstatic-class-variables-in-python&usg=AFQjCNENgcl06PKrGi1TimZ6rpA7AYv6Mg&sig2=X2n2Jcr38nxF4oAH6tkXFA
         with open(self.dfNM) as f:
             jsonLine=json.load(f);
+        os.close(lf)
         os.remove(self.lfNM)
         return self.convertJsonLineToGoogleDataTable(jsonLine)
 

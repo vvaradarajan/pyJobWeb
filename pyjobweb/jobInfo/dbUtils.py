@@ -1,6 +1,19 @@
 import pymysql
 import pymysql.cursors
 import json
+def dbReconnect():
+    def real_decorator(function):
+        def wrapper(*args, **kwargs):
+            try:
+                return function(*args, **kwargs)
+            except  Exception as inst:
+                print ("DB error({0}):".format(inst))
+                print ("Reconnecting")
+                job.conn=None
+                job.setConn()
+            return function(*args, **kwargs)
+        return wrapper
+    return real_decorator
 class job:
     #(jobId:String,jobClass:String,jobPrams:String)
     conn=None
@@ -30,8 +43,9 @@ class job:
         job.append(jobParams)
         return job
     @staticmethod 
+    @dbReconnect()
     def getJobList(categ):
-        job.setConn()
+        #job.setConn()
         sql= "select j.jobId,j.jobClass,j.jobParams from jobs j inner join jobCategory jc " \
         + " on j.jobid=jc.jobid and jc.category='"+categ+"'"
         print(sql)
@@ -43,13 +57,15 @@ class job:
             jobList.append(job.getJob(hdr[0][0],hdr[1][0],hdr[2][0]))
             for row in testCursor:
                 jobList.append(job.getJob(row[0],row[1],row[2]))
+            testCursor.close()
             return jobList 
         except Exception as e:
             print(e)
-        finally:
-            testCursor.close()
+            raise
+            
         
     @staticmethod 
+    @dbReconnect()
     def getJobCategList():
         job.setConn()
         sql = "select distinct category from jobCategory"
