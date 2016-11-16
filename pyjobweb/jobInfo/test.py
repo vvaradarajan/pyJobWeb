@@ -1,3 +1,8 @@
+import pymysql
+import pymysql.cursors
+import json
+
+####### Decorator named dbReconnect ########
 #Retry decorator
 #Retries a database function twice and the 1st failure  results in a reconnect
 def dbReconnect():
@@ -13,9 +18,8 @@ def dbReconnect():
             return function(*args, **kwargs)
         return wrapper
     return real_decorator
-import pymysql
-import pymysql.cursors
-import json
+
+###### Decorator Test code below #####
 class job:
     #(jobId:String,jobClass:String,jobPrams:String)
     conn=None
